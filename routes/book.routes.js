@@ -5,7 +5,7 @@ const prisma = require('../db/index');
 
 //  POST /api/books  -  Creates a new book
 router.post('/books', (req, res, next) => {
-    const { title, year, summary, quantity, genre, authorName } = req.body;
+    const { title, year, summary, quantity, genre, authorId } = req.body;
 
     const newBook = {
         title,
@@ -13,7 +13,7 @@ router.post('/books', (req, res, next) => {
         summary,
         quantity,
         genre,
-        authorName
+        authorId 
     };
 
     prisma.book.create({ data: newBook })
@@ -30,7 +30,7 @@ router.post('/books', (req, res, next) => {
 
 //  GET /api/books -  Retrieves all of the books
 router.get('/books', (req, res, next) => {
-    prisma.book.findMany()
+    prisma.book.findMany({ include: { author: true } })
         .then(allBooks => {
             res.json(allBooks);
         })
@@ -44,7 +44,7 @@ router.get('/books', (req, res, next) => {
 router.get('/books/:bookId', (req, res, next) => {
     const { bookId } = req.params;
 
-    prisma.book.findUnique({ where: { id: bookId } })
+    prisma.book.findUnique({ where: { id: bookId }, include: { author: true } })
         .then(book => {
             if (!book) {
                 res.status(404).json({ message: 'Book not found' });
@@ -63,7 +63,7 @@ router.get('/books/:bookId', (req, res, next) => {
 router.put('/books/:bookId', (req, res, next) => {
     const { bookId } = req.params;
 
-    const { title, year, summary, quantity, genre, authorName } = req.body;
+    const { title, year, summary, quantity, genre, authorId } = req.body;
 
     const newBookDetails = {
         title,
@@ -71,7 +71,7 @@ router.put('/books/:bookId', (req, res, next) => {
         summary,
         quantity,
         genre,
-        authorName
+        authorId
     };
 
     prisma.book.update({ where: { id: bookId }, data: newBookDetails })

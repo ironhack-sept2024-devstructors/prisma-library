@@ -15,6 +15,7 @@ require("./config")(app);
 
 app.use("/api", require("./routes/index.routes"));
 app.use("/api", require("./routes/book.routes"));
+app.use("/api", require("./routes/author.routes"));
 
 
 
